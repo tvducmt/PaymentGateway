@@ -1,0 +1,3740 @@
+{
+  "consumes": [
+    "application/json",
+    "application/xml"
+  ],
+  "produces": [
+    "application/json",
+    "application/xml"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "Description ... Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "title": "Payment Gateway API.",
+    "contact": {
+      "url": "https://rockship.co/"
+    },
+    "version": "0.1.0"
+  },
+  "host": "localhost",
+  "paths": {
+    "/bank-transfer": {
+      "post": {
+        "description": "Thực hiện quá trình giao dịch bằng hình thức Bank Transfer cho user",
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "BankTransferProcess",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_id",
+                "method_id",
+                "gateway_id"
+              ],
+              "properties": {
+                "gateway_id": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "GatewayID"
+                },
+                "method_id": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "MethodID"
+                },
+                "user_id": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "UserID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/credit-card": {
+      "post": {
+        "description": "Thực hiện quá trình giao dịch bằng hình thức Credit Card cho user. Charge thành công tạo ngay một Coupon có giá trị tương đương cho người dùng.",
+        "tags": [
+          "Transaction"
+        ],
+        "summary": "CreditCardProcess",
+        "operationId": "CreditCardProcess",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": [
+                "amount",
+                "token",
+                "select_mode_card",
+                "select_cus_id",
+                "remember_me"
+              ],
+              "properties": {
+                "amount": {
+                  "description": "Số tiền thực hiện giao dịch, mặc định đơn vị là vnd.",
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "Amount"
+                },
+                "name": {
+                  "description": "Thông tin thêm",
+                  "type": "string",
+                  "x-go-name": "Name"
+                },
+                "remember_me": {
+                  "description": "Yêu cầu có lưu lại thông tin thẻ hay không",
+                  "type": "boolean",
+                  "x-go-name": "Remember"
+                },
+                "select_cus_id": {
+                  "description": "Lựa chọn một trong danh sách các thẻ cũ khách hàng đã lưu trước đó.",
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "CusID"
+                },
+                "select_mode_card": {
+                  "description": "Lựa chọn của khách hàng sử dụng thẻ cũ hoặc dùng thẻ mới để giao dịch.",
+                  "type": "string",
+                  "x-go-name": "ModeCard"
+                },
+                "token": {
+                  "description": "Token xác thực user",
+                  "type": "string",
+                  "x-go-name": "Token"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {},
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/customer/cards": {
+      "get": {
+        "description": "Lấy danh sách tất cả các Credit Card mà user đã lưu ở các giao dịch trước đó",
+        "tags": [
+          "Customer"
+        ],
+        "operationId": "GetCardsStripe",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DecResCustomer"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "Xử lý quá trình đăng nhập của user",
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Login",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AccountAuth"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResLogin"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "Xử lý quá trình đăng ký tài khoản của user",
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Register",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password",
+                "pwConfirm"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "x-go-name": "Email"
+                },
+                "password": {
+                  "type": "string",
+                  "x-go-name": "Password"
+                },
+                "pwConfirm": {
+                  "type": "string",
+                  "x-go-name": "PwConfirm"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResRegisterSuccess"
+          },
+          "201": {
+            "$ref": "#/responses/DocResRegister"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/secret/receipt": {
+      "post": {
+        "description": "Tiếp nhận Receipt từ thiết bị di động, xử lí và trích xuất những thông tin cần thiết dựa vào Transaction Code có trong Receipt\n. Nếu Receipt gửi lên hợp lệ, tạo một Coupon có giá trị tương tương cho user tương ứng.",
+        "tags": [
+          "Receipt"
+        ],
+        "operationId": "ReceiveReceipt",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "timestamp",
+                "receipt",
+                "phonenumber"
+              ],
+              "properties": {
+                "phonenumber": {
+                  "type": "string",
+                  "x-go-name": "Phonenumber"
+                },
+                "receipt": {
+                  "type": "string",
+                  "x-go-name": "RawReceipt"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "x-go-name": "Timestamp"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocReceiveReceiptSuccess"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/transaction": {
+      "get": {
+        "description": "Lấy thông tin chi tiết của một giao dịch dựa vào id do user cung cấp",
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "GetTransactionDetail",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "x-go-name": "TxID",
+            "name": "tx_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResTxSuccess"
+          },
+          "201": {
+            "$ref": "#/responses/DocResTxMsg"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "post": {
+        "description": "Trả về thông tin lịch sử tất cả các giao dịch hiện có của user",
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "HistoryTransaction",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": [
+                "userid"
+              ],
+              "properties": {
+                "userid": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "x-go-name": "UserID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/transactions/timeout": {
+      "put": {
+        "description": "Giám sát và cập nhật lại trạng thái transaction khi quá thời hạn để được xử lí",
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "UpdateTransactionTimeOut",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResUpdateTxTimeOut"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/user/coupons": {
+      "get": {
+        "description": "Lấy danh sách tất cả các coupon mà user đang sở hữu",
+        "tags": [
+          "Coupon"
+        ],
+        "operationId": "GetCouponInfo",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "x-go-name": "UserID",
+            "name": "userid",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResCouponInfo"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/user/info": {
+      "get": {
+        "description": "Lấy tất cả những thông tin cơ bản của user",
+        "tags": [
+          "Users"
+        ],
+        "operationId": "GetUserInfo",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "x-go-name": "UserID",
+            "name": "userid",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResUserInfo"
+          },
+          "201": {
+            "$ref": "#/responses/DocResUserMsg"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      },
+      "put": {
+        "description": "Cập nhật thông tin cơ bản cho user. Chỉ cho phép thay đổi fullname và phone. Mọi thông tin khác gủi lên chỉ để xác minh user",
+        "tags": [
+          "Users"
+        ],
+        "operationId": "UpdateUserInfo",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UserInfo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResUpdateUserInfo"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    },
+    "/user/password": {
+      "put": {
+        "description": "Thay đổi mật khẩu cho user khi có yêu cầu",
+        "tags": [
+          "Users"
+        ],
+        "operationId": "UpdatePassword",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Password"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DocResUpdateUserInfo"
+          },
+          "500": {
+            "$ref": "#/responses/DocResDefault"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Account": {
+      "description": "For more details see https://stripe.com/docs/api/#account.",
+      "type": "object",
+      "title": "Account is the resource representing your Stripe account.",
+      "properties": {
+        "business_logo": {
+          "type": "string",
+          "x-go-name": "BusinessLogo"
+        },
+        "business_name": {
+          "type": "string",
+          "x-go-name": "BusinessName"
+        },
+        "business_primary_color": {
+          "type": "string",
+          "x-go-name": "BusinessPrimaryColor"
+        },
+        "business_url": {
+          "type": "string",
+          "x-go-name": "BusinessURL"
+        },
+        "charges_enabled": {
+          "type": "boolean",
+          "x-go-name": "ChargesEnabled"
+        },
+        "country": {
+          "type": "string",
+          "x-go-name": "Country"
+        },
+        "debit_negative_balances": {
+          "type": "boolean",
+          "x-go-name": "DebitNegativeBalances"
+        },
+        "decline_charge_on": {
+          "$ref": "#/definitions/AccountDeclineSettings"
+        },
+        "default_currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "details_submitted": {
+          "type": "boolean",
+          "x-go-name": "DetailsSubmitted"
+        },
+        "display_name": {
+          "type": "string",
+          "x-go-name": "DisplayName"
+        },
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "external_accounts": {
+          "$ref": "#/definitions/ExternalAccountList"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "keys": {
+          "type": "object",
+          "properties": {
+            "publishable": {
+              "type": "string",
+              "x-go-name": "Publishable"
+            },
+            "secret": {
+              "type": "string",
+              "x-go-name": "Secret"
+            }
+          },
+          "x-go-name": "Keys"
+        },
+        "legal_entity": {
+          "$ref": "#/definitions/LegalEntity"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "payout_schedule": {
+          "$ref": "#/definitions/PayoutSchedule"
+        },
+        "payout_statement_descriptor": {
+          "type": "string",
+          "x-go-name": "PayoutStatementDescriptor"
+        },
+        "payouts_enabled": {
+          "type": "boolean",
+          "x-go-name": "PayoutsEnabled"
+        },
+        "product_description": {
+          "type": "string",
+          "x-go-name": "ProductDescription"
+        },
+        "statement_descriptor": {
+          "type": "string",
+          "x-go-name": "StatementDescriptor"
+        },
+        "support_address": {
+          "$ref": "#/definitions/Address"
+        },
+        "support_email": {
+          "type": "string",
+          "x-go-name": "SupportEmail"
+        },
+        "support_phone": {
+          "type": "string",
+          "x-go-name": "SupportPhone"
+        },
+        "support_url": {
+          "type": "string",
+          "x-go-name": "SupportURL"
+        },
+        "timezone": {
+          "type": "string",
+          "x-go-name": "Timezone"
+        },
+        "tos_acceptance": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "integer",
+              "format": "int64",
+              "x-go-name": "Date"
+            },
+            "ip": {
+              "type": "string",
+              "x-go-name": "IP"
+            },
+            "user_agent": {
+              "type": "string",
+              "x-go-name": "UserAgent"
+            }
+          },
+          "x-go-name": "TOSAcceptance"
+        },
+        "type": {
+          "$ref": "#/definitions/AccountType"
+        },
+        "verification": {
+          "type": "object",
+          "properties": {
+            "disabled_reason": {
+              "$ref": "#/definitions/IdentityVerificationDisabledReason"
+            },
+            "due_by": {
+              "type": "integer",
+              "format": "int64",
+              "x-go-name": "DueBy"
+            },
+            "fields_needed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "x-go-name": "FieldsNeeded"
+            }
+          },
+          "x-go-name": "Verification"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "AccountAddress": {
+      "type": "object",
+      "title": "Address is the structure for an account address.",
+      "properties": {
+        "city": {
+          "type": "string",
+          "x-go-name": "City"
+        },
+        "country": {
+          "type": "string",
+          "x-go-name": "Country"
+        },
+        "line1": {
+          "type": "string",
+          "x-go-name": "Line1"
+        },
+        "line2": {
+          "type": "string",
+          "x-go-name": "Line2"
+        },
+        "postal_code": {
+          "type": "string",
+          "x-go-name": "PostalCode"
+        },
+        "state": {
+          "type": "string",
+          "x-go-name": "State"
+        },
+        "town": {
+          "description": "Town/cho-me. Note that this is only used for Kana/Kanji representations\nof an address.",
+          "type": "string",
+          "x-go-name": "Town"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "AccountAuth": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "password": {
+          "type": "string",
+          "x-go-name": "Password"
+        }
+      },
+      "x-go-package": "gitlab.com/rockship/payment-gateway/api"
+    },
+    "AccountDeclineSettings": {
+      "type": "object",
+      "title": "AccountDeclineSettings is the structure for an account's decline settings.",
+      "properties": {
+        "avs_failure": {
+          "type": "boolean",
+          "x-go-name": "AVSFailure"
+        },
+        "cvc_failure": {
+          "type": "boolean",
+          "x-go-name": "CVCFailure"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "AccountType": {
+      "type": "string",
+      "title": "AccountType is the type of an account.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "AdditionalOwner": {
+      "type": "object",
+      "title": "AdditionalOwner is the structure for an account owner.",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/AccountAddress"
+        },
+        "dob": {
+          "$ref": "#/definitions/DOB"
+        },
+        "first_name": {
+          "type": "string",
+          "x-go-name": "FirstName"
+        },
+        "last_name": {
+          "type": "string",
+          "x-go-name": "LastName"
+        },
+        "maiden_name": {
+          "type": "string",
+          "x-go-name": "MaidenName"
+        },
+        "personal_id_number_provided": {
+          "type": "boolean",
+          "x-go-name": "PersonalIDNumberProvided"
+        },
+        "verification": {
+          "$ref": "#/definitions/IdentityVerification"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Address": {
+      "type": "object",
+      "title": "Standard address resource.",
+      "properties": {
+        "city": {
+          "type": "string",
+          "x-go-name": "City"
+        },
+        "country": {
+          "type": "string",
+          "x-go-name": "Country"
+        },
+        "line1": {
+          "type": "string",
+          "x-go-name": "Line1"
+        },
+        "line2": {
+          "type": "string",
+          "x-go-name": "Line2"
+        },
+        "postal_code": {
+          "type": "string",
+          "x-go-name": "PostalCode"
+        },
+        "state": {
+          "type": "string",
+          "x-go-name": "State"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Application": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ApplicationFee": {
+      "description": "For more details see https://stripe.com/docs/api#application_fees.",
+      "type": "object",
+      "title": "ApplicationFee is the resource representing a Stripe application fee.",
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Account"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "amount_refunded": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AmountRefunded"
+        },
+        "application": {
+          "type": "string",
+          "x-go-name": "Application"
+        },
+        "balance_transaction": {
+          "$ref": "#/definitions/BalanceTransaction"
+        },
+        "charge": {
+          "$ref": "#/definitions/Charge"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "originating_transaction": {
+          "$ref": "#/definitions/Charge"
+        },
+        "refunded": {
+          "type": "boolean",
+          "x-go-name": "Refunded"
+        },
+        "refunds": {
+          "$ref": "#/definitions/FeeRefundList"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BalanceTransaction": {
+      "description": "For more details see https://stripe.com/docs/api/#balance.",
+      "type": "object",
+      "title": "BalanceTransaction is the resource representing the balance transaction.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "available_on": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AvailableOn"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "exchange_rate": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "ExchangeRate"
+        },
+        "fee": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Fee"
+        },
+        "fee_details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BalanceTransactionFee"
+          },
+          "x-go-name": "FeeDetails"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "net": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Net"
+        },
+        "recipient": {
+          "type": "string",
+          "x-go-name": "Recipient"
+        },
+        "source": {
+          "$ref": "#/definitions/BalanceTransactionSource"
+        },
+        "status": {
+          "$ref": "#/definitions/BalanceTransactionStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/BalanceTransactionType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BalanceTransactionFee": {
+      "type": "object",
+      "title": "BalanceTransactionFee is a structure that breaks down the fees in a transaction.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "application": {
+          "type": "string",
+          "x-go-name": "Application"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BalanceTransactionSource": {
+      "description": "The Type should indicate which object is fleshed out.\nFor more details see https://stripe.com/docs/api#retrieve_balance_transaction",
+      "type": "object",
+      "title": "BalanceTransactionSource describes the source of a balance Transaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "object": {
+          "$ref": "#/definitions/BalanceTransactionSourceType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BalanceTransactionSourceType": {
+      "type": "string",
+      "title": "BalanceTransactionSourceType consts represent valid balance transaction sources.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BalanceTransactionStatus": {
+      "type": "string",
+      "title": "BalanceTransactionStatus is the list of allowed values for the balance transaction's status.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BalanceTransactionType": {
+      "type": "string",
+      "title": "BalanceTransactionType is the list of allowed values for the balance transaction's type.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BankAccount": {
+      "type": "object",
+      "title": "BankAccount represents a Stripe bank account.",
+      "properties": {
+        "account_holder_name": {
+          "type": "string",
+          "x-go-name": "AccountHolderName"
+        },
+        "account_holder_type": {
+          "$ref": "#/definitions/BankAccountAccountHolderType"
+        },
+        "bank_name": {
+          "type": "string",
+          "x-go-name": "BankName"
+        },
+        "country": {
+          "type": "string",
+          "x-go-name": "Country"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "default_for_currency": {
+          "type": "boolean",
+          "x-go-name": "DefaultForCurrency"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "fingerprint": {
+          "type": "string",
+          "x-go-name": "Fingerprint"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "last4": {
+          "type": "string",
+          "x-go-name": "Last4"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "routing_number": {
+          "type": "string",
+          "x-go-name": "RoutingNumber"
+        },
+        "status": {
+          "$ref": "#/definitions/BankAccountStatus"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BankAccountAccountHolderType": {
+      "type": "string",
+      "title": "BankAccountAccountHolderType is the list of allowed values for the bank account holder type.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "BankAccountStatus": {
+      "type": "string",
+      "title": "BankAccountStatus is the list of allowed values for the bank account's status.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Card": {
+      "description": "For more details see https://stripe.com/docs/api#cards.",
+      "type": "object",
+      "title": "Card is the resource representing a Stripe credit/debit card.",
+      "properties": {
+        "address_city": {
+          "type": "string",
+          "x-go-name": "AddressCity"
+        },
+        "address_country": {
+          "type": "string",
+          "x-go-name": "AddressCountry"
+        },
+        "address_line1": {
+          "type": "string",
+          "x-go-name": "AddressLine1"
+        },
+        "address_line1_check": {
+          "$ref": "#/definitions/CardVerification"
+        },
+        "address_line2": {
+          "type": "string",
+          "x-go-name": "AddressLine2"
+        },
+        "address_state": {
+          "type": "string",
+          "x-go-name": "AddressState"
+        },
+        "address_zip": {
+          "type": "string",
+          "x-go-name": "AddressZip"
+        },
+        "address_zip_check": {
+          "$ref": "#/definitions/CardVerification"
+        },
+        "brand": {
+          "$ref": "#/definitions/CardBrand"
+        },
+        "country": {
+          "type": "string",
+          "x-go-name": "Country"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "cvc_check": {
+          "$ref": "#/definitions/CardVerification"
+        },
+        "default_for_currency": {
+          "type": "boolean",
+          "x-go-name": "DefaultForCurrency"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "description": {
+          "description": "Description is a succinct summary of the card's information.\n\nPlease note that this field is for internal use only and is not returned\nas part of standard API requests.",
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "dynamic_last4": {
+          "type": "string",
+          "x-go-name": "DynamicLast4"
+        },
+        "exp_month": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ExpMonth"
+        },
+        "exp_year": {
+          "type": "integer",
+          "format": "uint16",
+          "x-go-name": "ExpYear"
+        },
+        "fingerprint": {
+          "type": "string",
+          "x-go-name": "Fingerprint"
+        },
+        "funding": {
+          "$ref": "#/definitions/CardFunding"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "iin": {
+          "description": "IIN is the card's \"Issuer Identification Number\".\n\nPlease note that this field is for internal use only and is not returned\nas part of standard API requests.",
+          "type": "string",
+          "x-go-name": "IIN"
+        },
+        "issuer": {
+          "description": "Issuer is a bank or financial institution that provides the card.\n\nPlease note that this field is for internal use only and is not returned\nas part of standard API requests.",
+          "type": "string",
+          "x-go-name": "Issuer"
+        },
+        "last4": {
+          "type": "string",
+          "x-go-name": "Last4"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "recipient": {
+          "$ref": "#/definitions/Recipient"
+        },
+        "three_d_secure": {
+          "$ref": "#/definitions/ThreeDSecure"
+        },
+        "tokenization_method": {
+          "$ref": "#/definitions/CardTokenizationMethod"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "CardBrand": {
+      "type": "string",
+      "title": "CardBrand is the list of allowed values for the card's brand.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "CardFunding": {
+      "type": "string",
+      "title": "CardFunding is the list of allowed values for the card's funding.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "CardList": {
+      "type": "object",
+      "title": "CardList is a list object for cards.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Card"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "CardTokenizationMethod": {
+      "type": "string",
+      "title": "CardTokenizationMethod is the list of allowed values for the card's tokenization method.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "CardVerification": {
+      "type": "string",
+      "title": "CardVerification is the list of allowed verification responses.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Charge": {
+      "description": "For more details see https://stripe.com/docs/api#charges.",
+      "type": "object",
+      "title": "Charge is the resource representing a Stripe charge.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "amount_refunded": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AmountRefunded"
+        },
+        "application": {
+          "$ref": "#/definitions/Application"
+        },
+        "application_fee": {
+          "$ref": "#/definitions/ApplicationFee"
+        },
+        "balance_transaction": {
+          "$ref": "#/definitions/BalanceTransaction"
+        },
+        "captured": {
+          "type": "boolean",
+          "x-go-name": "Captured"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "destination": {
+          "$ref": "#/definitions/Account"
+        },
+        "dispute": {
+          "$ref": "#/definitions/Dispute"
+        },
+        "failure_code": {
+          "type": "string",
+          "x-go-name": "FailureCode"
+        },
+        "failure_message": {
+          "type": "string",
+          "x-go-name": "FailureMessage"
+        },
+        "fraud_details": {
+          "$ref": "#/definitions/FraudDetails"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "invoice": {
+          "$ref": "#/definitions/Invoice"
+        },
+        "level3": {
+          "$ref": "#/definitions/ChargeLevel3"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "outcome": {
+          "$ref": "#/definitions/ChargeOutcome"
+        },
+        "paid": {
+          "type": "boolean",
+          "x-go-name": "Paid"
+        },
+        "receipt_email": {
+          "type": "string",
+          "x-go-name": "ReceiptEmail"
+        },
+        "receipt_number": {
+          "type": "string",
+          "x-go-name": "ReceiptNumber"
+        },
+        "refunded": {
+          "type": "boolean",
+          "x-go-name": "Refunded"
+        },
+        "refunds": {
+          "$ref": "#/definitions/RefundList"
+        },
+        "review": {
+          "$ref": "#/definitions/Review"
+        },
+        "shipping": {
+          "$ref": "#/definitions/ShippingDetails"
+        },
+        "source": {
+          "$ref": "#/definitions/PaymentSource"
+        },
+        "source_transfer": {
+          "$ref": "#/definitions/Transfer"
+        },
+        "statement_descriptor": {
+          "type": "string",
+          "x-go-name": "StatementDescriptor"
+        },
+        "status": {
+          "type": "string",
+          "x-go-name": "Status"
+        },
+        "transfer": {
+          "$ref": "#/definitions/Transfer"
+        },
+        "transfer_group": {
+          "type": "string",
+          "x-go-name": "TransferGroup"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ChargeFraudStripeReport": {
+      "type": "string",
+      "title": "ChargeFraudStripeReport is the list of allowed values for reporting fraud.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ChargeFraudUserReport": {
+      "type": "string",
+      "title": "ChargeFraudUserReport is the list of allowed values for reporting fraud.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ChargeLevel3": {
+      "description": "This is in private beta and would be empty for most integrations",
+      "type": "object",
+      "title": "ChargeLevel3 represents the Level III data.",
+      "properties": {
+        "customer_reference": {
+          "type": "string",
+          "x-go-name": "CustomerReference"
+        },
+        "line_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChargeLevel3LineItem"
+          },
+          "x-go-name": "LineItems"
+        },
+        "merchant_reference": {
+          "type": "string",
+          "x-go-name": "MerchantReference"
+        },
+        "shipping_address_zip": {
+          "type": "string",
+          "x-go-name": "ShippingAddressZip"
+        },
+        "shipping_amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ShippingAmount"
+        },
+        "shipping_from_zip": {
+          "type": "string",
+          "x-go-name": "ShippingFromZip"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ChargeLevel3LineItem": {
+      "description": "This is in private beta and would be empty for most integrations",
+      "type": "object",
+      "title": "ChargeLevel3LineItems represents a line item on level III data.",
+      "properties": {
+        "discount_amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "DiscountAmount"
+        },
+        "product_code": {
+          "type": "string",
+          "x-go-name": "ProductCode"
+        },
+        "product_description": {
+          "type": "string",
+          "x-go-name": "ProductDescription"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Quantity"
+        },
+        "tax_amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TaxAmount"
+        },
+        "unit_cost": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "UnitCost"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ChargeOutcome": {
+      "description": "Outcome is the charge's outcome that details whether a payment\nwas accepted and why.",
+      "type": "object",
+      "properties": {
+        "network_status": {
+          "type": "string",
+          "x-go-name": "NetworkStatus"
+        },
+        "reason": {
+          "type": "string",
+          "x-go-name": "Reason"
+        },
+        "risk_level": {
+          "type": "string",
+          "x-go-name": "RiskLevel"
+        },
+        "rule": {
+          "$ref": "#/definitions/ChargeOutcomeRule"
+        },
+        "seller_message": {
+          "type": "string",
+          "x-go-name": "SellerMessage"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ChargeOutcomeRule": {
+      "type": "object",
+      "title": "ChargeOutcomeRule tells you the Radar rule that blocked the charge, if any.",
+      "properties": {
+        "action": {
+          "type": "string",
+          "x-go-name": "Action"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "predicate": {
+          "type": "string",
+          "x-go-name": "Predicate"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Coupon": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Mã Coupon Code",
+          "type": "string",
+          "x-go-name": "Code"
+        },
+        "create_at": {
+          "description": "Thời gian tạo Coupon",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "CreateAt"
+        },
+        "currency": {
+          "description": "Đơn vị tiền tệ của Coupon. Mặc định là vnd",
+          "type": "string",
+          "x-go-name": "Currency"
+        },
+        "id": {
+          "description": "ID định danh cho coupon",
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1,
+          "x-go-name": "ID"
+        },
+        "status": {
+          "description": "Trạng thái Coupon (spend, unspend)",
+          "type": "string",
+          "x-go-name": "Status"
+        },
+        "tx_id": {
+          "description": "ID khóa ngoại đến model transaction",
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1,
+          "x-go-name": "TxID"
+        },
+        "value": {
+          "description": "Giá trị của Coupon",
+          "type": "number",
+          "format": "double",
+          "minimum": 1,
+          "x-go-name": "Value"
+        }
+      },
+      "x-go-package": "gitlab.com/rockship/payment-gateway/models"
+    },
+    "Currency": {
+      "description": "For more details see https://support.stripe.com/questions/which-currencies-does-stripe-support.",
+      "type": "string",
+      "title": "Currency is the list of supported currencies.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Customer": {
+      "description": "For more details see https://stripe.com/docs/api#customers.",
+      "type": "object",
+      "title": "Customer is the resource representing a Stripe customer.",
+      "properties": {
+        "account_balance": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AccountBalance"
+        },
+        "business_vat_id": {
+          "type": "string",
+          "x-go-name": "BusinessVATID"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "default_source": {
+          "$ref": "#/definitions/PaymentSource"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "delinquent": {
+          "type": "boolean",
+          "x-go-name": "Delinquent"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "discount": {
+          "$ref": "#/definitions/Discount"
+        },
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "shipping": {
+          "$ref": "#/definitions/CustomerShippingDetails"
+        },
+        "sources": {
+          "$ref": "#/definitions/SourceList"
+        },
+        "subscriptions": {
+          "$ref": "#/definitions/SubscriptionList"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "CustomerShippingDetails": {
+      "type": "object",
+      "title": "CustomerShippingDetails is the structure containing shipping information.",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "phone": {
+          "type": "string",
+          "x-go-name": "Phone"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "DOB": {
+      "type": "object",
+      "title": "DOB is a structure for an account owner's date of birth.",
+      "properties": {
+        "day": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Day"
+        },
+        "month": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Month"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Year"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Discount": {
+      "description": "For more details see https://stripe.com/docs/api#discounts.",
+      "type": "object",
+      "title": "Discount is the resource representing a Stripe discount.",
+      "properties": {
+        "coupon": {
+          "$ref": "#/definitions/Coupon"
+        },
+        "customer": {
+          "type": "string",
+          "x-go-name": "Customer"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "end": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "End"
+        },
+        "start": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Start"
+        },
+        "subscription": {
+          "type": "string",
+          "x-go-name": "Subscription"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Dispute": {
+      "description": "For more details see https://stripe.com/docs/api#disputes.",
+      "type": "object",
+      "title": "Dispute is the resource representing a Stripe dispute.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "balance_transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BalanceTransaction"
+          },
+          "x-go-name": "BalanceTransactions"
+        },
+        "charge": {
+          "$ref": "#/definitions/Charge"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "evidence": {
+          "$ref": "#/definitions/DisputeEvidence"
+        },
+        "evidence_details": {
+          "$ref": "#/definitions/EvidenceDetails"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "is_charge_refundable": {
+          "type": "boolean",
+          "x-go-name": "IsChargeRefundable"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "reason": {
+          "$ref": "#/definitions/DisputeReason"
+        },
+        "status": {
+          "$ref": "#/definitions/DisputeStatus"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "DisputeEvidence": {
+      "description": "DisputeEvidence is the structure that contains various details about\nthe evidence submitted for the dispute.\nAlmost all fields are strings since there structures (i.e. address)\ndo not typically get parsed by anyone and are thus presented as-received.",
+      "type": "object",
+      "properties": {
+        "access_activity_log": {
+          "type": "string",
+          "x-go-name": "AccessActivityLog"
+        },
+        "billing_address": {
+          "type": "string",
+          "x-go-name": "BillingAddress"
+        },
+        "cancellation_policy": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "cancellation_policy_disclosure": {
+          "type": "string",
+          "x-go-name": "CancellationPolicyDisclosure"
+        },
+        "cancellation_rebuttal": {
+          "type": "string",
+          "x-go-name": "CancellationRebuttal"
+        },
+        "customer_communication": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "customer_email_address": {
+          "type": "string",
+          "x-go-name": "CustomerEmailAddress"
+        },
+        "customer_name": {
+          "type": "string",
+          "x-go-name": "CustomerName"
+        },
+        "customer_purchase_ip": {
+          "type": "string",
+          "x-go-name": "CustomerPurchaseIP"
+        },
+        "customer_signature": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "duplicate_charge_documentation": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "duplicate_charge_explanation": {
+          "type": "string",
+          "x-go-name": "DuplicateChargeExplanation"
+        },
+        "duplicate_charge_id": {
+          "type": "string",
+          "x-go-name": "DuplicateChargeID"
+        },
+        "product_description": {
+          "type": "string",
+          "x-go-name": "ProductDescription"
+        },
+        "receipt": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "refund_policy": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "refund_policy_disclosure": {
+          "type": "string",
+          "x-go-name": "RefundPolicyDisclosure"
+        },
+        "refund_refusal_explanation": {
+          "type": "string",
+          "x-go-name": "RefundRefusalExplanation"
+        },
+        "service_date": {
+          "type": "string",
+          "x-go-name": "ServiceDate"
+        },
+        "service_documentation": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "shipping_address": {
+          "type": "string",
+          "x-go-name": "ShippingAddress"
+        },
+        "shipping_carrier": {
+          "type": "string",
+          "x-go-name": "ShippingCarrier"
+        },
+        "shipping_date": {
+          "type": "string",
+          "x-go-name": "ShippingDate"
+        },
+        "shipping_documentation": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "shipping_tracking_number": {
+          "type": "string",
+          "x-go-name": "ShippingTrackingNumber"
+        },
+        "uncategorized_file": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "uncategorized_text": {
+          "type": "string",
+          "x-go-name": "UncategorizedText"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "DisputeReason": {
+      "type": "string",
+      "title": "DisputeReason is the list of allowed values for a discount's reason.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "DisputeStatus": {
+      "type": "string",
+      "title": "DisputeStatus is the list of allowed values for a discount's status.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "EvidenceDetails": {
+      "description": "EvidenceDetails is the structure representing more details about\nthe dispute.",
+      "type": "object",
+      "properties": {
+        "due_by": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "DueBy"
+        },
+        "has_evidence": {
+          "type": "boolean",
+          "x-go-name": "HasEvidence"
+        },
+        "past_due": {
+          "type": "boolean",
+          "x-go-name": "PastDue"
+        },
+        "submission_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "SubmissionCount"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ExternalAccount": {
+      "description": "ExternalAccount is an external account (a bank account or card) that's\nattached to an account. It contains fields that will be conditionally\npopulated depending on its type.",
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/BankAccount"
+        },
+        "Card": {
+          "$ref": "#/definitions/Card"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "object": {
+          "$ref": "#/definitions/ExternalAccountType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ExternalAccountList": {
+      "description": "ExternalAccountList is a list of external accounts that may be either bank\naccounts or cards.",
+      "type": "object",
+      "properties": {
+        "data": {
+          "description": "Values contains any external accounts (bank accounts and/or cards)\ncurrently attached to this account.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAccount"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ExternalAccountType": {
+      "type": "string",
+      "title": "ExternalAccountType is the type of an external account.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "FeeRefund": {
+      "description": "For more details see https://stripe.com/docs/api#fee_refunds.",
+      "type": "object",
+      "title": "FeeRefund is the resource representing a Stripe application fee refund.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "balance_transaction": {
+          "$ref": "#/definitions/BalanceTransaction"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "fee": {
+          "type": "string",
+          "x-go-name": "Fee"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "FeeRefundList": {
+      "type": "object",
+      "title": "FeeRefundList is a list object for application fee refunds.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FeeRefund"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "FileUpload": {
+      "description": "For more details see https://stripe.com/docs/api#file_uploads.",
+      "type": "object",
+      "title": "FileUpload is the resource representing a Stripe file upload.",
+      "properties": {
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "purpose": {
+          "$ref": "#/definitions/FileUploadPurpose"
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Size"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "FileUploadPurpose": {
+      "type": "string",
+      "title": "FileUploadPurpose is the purpose of a particular file upload.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "FraudDetails": {
+      "type": "object",
+      "title": "FraudDetails is the structure detailing fraud status.",
+      "properties": {
+        "stripe_report": {
+          "$ref": "#/definitions/ChargeFraudStripeReport"
+        },
+        "user_report": {
+          "$ref": "#/definitions/ChargeFraudUserReport"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "IdentityVerification": {
+      "type": "object",
+      "title": "IdentityVerification is the structure for an account's verification.",
+      "properties": {
+        "details": {
+          "type": "string",
+          "x-go-name": "Details"
+        },
+        "details_code": {
+          "$ref": "#/definitions/IdentityVerificationDetailsCode"
+        },
+        "document": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "document_back": {
+          "$ref": "#/definitions/FileUpload"
+        },
+        "status": {
+          "$ref": "#/definitions/IdentityVerificationStatus"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "IdentityVerificationDetailsCode": {
+      "description": "IdentityVerificationDetailsCode is a machine-readable code specifying the\nverification state of a legal entity",
+      "type": "string",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "IdentityVerificationDisabledReason": {
+      "description": "IdentityVerificationDisabledReason describes the valid reason to disable account",
+      "type": "string",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "IdentityVerificationStatus": {
+      "type": "string",
+      "title": "IdentityVerificationStatus describes the different statuses for identity verification.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Invoice": {
+      "description": "For more details see https://stripe.com/docs/api#invoice_object.",
+      "type": "object",
+      "title": "Invoice is the resource representing a Stripe invoice.",
+      "properties": {
+        "amount_due": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AmountDue"
+        },
+        "amount_paid": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AmountPaid"
+        },
+        "amount_remaining": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AmountRemaining"
+        },
+        "application_fee": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ApplicationFee"
+        },
+        "attempt_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AttemptCount"
+        },
+        "attempted": {
+          "type": "boolean",
+          "x-go-name": "Attempted"
+        },
+        "auto_advance": {
+          "type": "boolean",
+          "x-go-name": "AutoAdvance"
+        },
+        "billing": {
+          "$ref": "#/definitions/InvoiceBilling"
+        },
+        "billing_reason": {
+          "$ref": "#/definitions/InvoiceBillingReason"
+        },
+        "charge": {
+          "$ref": "#/definitions/Charge"
+        },
+        "closed": {
+          "type": "boolean",
+          "x-go-name": "Closed"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "date": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Date"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "discount": {
+          "$ref": "#/definitions/Discount"
+        },
+        "due_date": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "DueDate"
+        },
+        "ending_balance": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "EndingBalance"
+        },
+        "forgiven": {
+          "type": "boolean",
+          "x-go-name": "Forgiven"
+        },
+        "hosted_invoice_url": {
+          "type": "string",
+          "x-go-name": "HostedInvoiceURL"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "invoice_pdf": {
+          "type": "string",
+          "x-go-name": "InvoicePDF"
+        },
+        "lines": {
+          "$ref": "#/definitions/InvoiceLineList"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "next_payment_attempt": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "NextPaymentAttempt"
+        },
+        "number": {
+          "type": "string",
+          "x-go-name": "Number"
+        },
+        "paid": {
+          "type": "boolean",
+          "x-go-name": "Paid"
+        },
+        "period_end": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "PeriodEnd"
+        },
+        "period_start": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "PeriodStart"
+        },
+        "receipt_number": {
+          "type": "string",
+          "x-go-name": "ReceiptNumber"
+        },
+        "starting_balance": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "StartingBalance"
+        },
+        "statement_descriptor": {
+          "type": "string",
+          "x-go-name": "StatementDescriptor"
+        },
+        "subscription": {
+          "type": "string",
+          "x-go-name": "Subscription"
+        },
+        "subscription_proration_date": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "SubscriptionProrationDate"
+        },
+        "subtotal": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Subtotal"
+        },
+        "tax": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Tax"
+        },
+        "tax_percent": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "TaxPercent"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Total"
+        },
+        "webhooks_delivered_at": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "WebhooksDeliveredAt"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "InvoiceBilling": {
+      "type": "string",
+      "title": "InvoiceBilling is the type of billing method for this invoice.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "InvoiceBillingReason": {
+      "description": "InvoiceBillingReason is the reason why a given invoice was created",
+      "type": "string",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "InvoiceLine": {
+      "description": "For more details see https://stripe.com/docs/api#invoice_line_item_object.",
+      "type": "object",
+      "title": "InvoiceLine is the resource representing a Stripe invoice line item.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "discountable": {
+          "type": "boolean",
+          "x-go-name": "Discountable"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "live_mode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "period": {
+          "$ref": "#/definitions/Period"
+        },
+        "plan": {
+          "$ref": "#/definitions/Plan"
+        },
+        "proration": {
+          "type": "boolean",
+          "x-go-name": "Proration"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Quantity"
+        },
+        "subscription": {
+          "type": "string",
+          "x-go-name": "Subscription"
+        },
+        "subscription_item": {
+          "type": "string",
+          "x-go-name": "SubscriptionItem"
+        },
+        "type": {
+          "$ref": "#/definitions/InvoiceLineType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "InvoiceLineList": {
+      "type": "object",
+      "title": "InvoiceLineList is a list object for invoice line items.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InvoiceLine"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "InvoiceLineType": {
+      "type": "string",
+      "title": "InvoiceLineType is the list of allowed values for the invoice line's type.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "LegalEntity": {
+      "type": "object",
+      "title": "LegalEntity is the structure for properties related to an account's legal state.",
+      "properties": {
+        "additional_owners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdditionalOwner"
+          },
+          "x-go-name": "AdditionalOwners"
+        },
+        "address": {
+          "$ref": "#/definitions/AccountAddress"
+        },
+        "address_kana": {
+          "$ref": "#/definitions/AccountAddress"
+        },
+        "address_kanji": {
+          "$ref": "#/definitions/AccountAddress"
+        },
+        "business_name": {
+          "type": "string",
+          "x-go-name": "BusinessName"
+        },
+        "business_name_kana": {
+          "type": "string",
+          "x-go-name": "BusinessNameKana"
+        },
+        "business_name_kanji": {
+          "type": "string",
+          "x-go-name": "BusinessNameKanji"
+        },
+        "business_tax_id_provided": {
+          "type": "boolean",
+          "x-go-name": "BusinessTaxIDProvided"
+        },
+        "business_vat_id_provided": {
+          "type": "boolean",
+          "x-go-name": "BusinessVATIDProvided"
+        },
+        "dob": {
+          "$ref": "#/definitions/DOB"
+        },
+        "first_name": {
+          "type": "string",
+          "x-go-name": "FirstName"
+        },
+        "first_name_kana": {
+          "type": "string",
+          "x-go-name": "FirstNameKana"
+        },
+        "first_name_kanji": {
+          "type": "string",
+          "x-go-name": "FirstNameKanji"
+        },
+        "gender": {
+          "type": "string",
+          "x-go-name": "Gender"
+        },
+        "last_name": {
+          "type": "string",
+          "x-go-name": "LastName"
+        },
+        "last_name_kana": {
+          "type": "string",
+          "x-go-name": "LastNameKana"
+        },
+        "last_name_kanji": {
+          "type": "string",
+          "x-go-name": "LastNameKanji"
+        },
+        "maiden_name": {
+          "type": "string",
+          "x-go-name": "MaidenName"
+        },
+        "personal_address": {
+          "$ref": "#/definitions/AccountAddress"
+        },
+        "personal_address_kana": {
+          "$ref": "#/definitions/AccountAddress"
+        },
+        "personal_address_kanji": {
+          "$ref": "#/definitions/AccountAddress"
+        },
+        "personal_id_number_provided": {
+          "type": "boolean",
+          "x-go-name": "PersonalIDNumberProvided"
+        },
+        "phone_number": {
+          "type": "string",
+          "x-go-name": "PhoneNumber"
+        },
+        "ssn_last_4_provided": {
+          "type": "boolean",
+          "x-go-name": "SSNLast4Provided"
+        },
+        "type": {
+          "$ref": "#/definitions/LegalEntityType"
+        },
+        "verification": {
+          "$ref": "#/definitions/IdentityVerification"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "LegalEntityType": {
+      "type": "string",
+      "title": "LegalEntityType describes the types for a legal entity.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "NullFloat64": {
+      "description": "NullFloat64 implements the Scanner interface so\nit can be used as a scan destination, similar to NullString.",
+      "type": "object",
+      "title": "NullFloat64 represents a float64 that may be null.",
+      "properties": {
+        "Float64": {
+          "type": "number",
+          "format": "double"
+        },
+        "Valid": {
+          "type": "boolean"
+        }
+      },
+      "x-go-package": "database/sql"
+    },
+    "NullString": {
+      "description": "var s NullString\nerr := db.QueryRow(\"SELECT name FROM foo WHERE id=?\", id).Scan(\u0026s)\n...\nif s.Valid {\nuse s.String\n} else {\nNULL value\n}",
+      "type": "object",
+      "title": "NullString represents a string that may be null.\nNullString implements the Scanner interface so\nit can be used as a scan destination:",
+      "properties": {
+        "String": {
+          "type": "string"
+        },
+        "Valid": {
+          "type": "boolean"
+        }
+      },
+      "x-go-package": "database/sql"
+    },
+    "NullTime": {
+      "description": "NullTime represents a time.Time that may be null. NullTime implements the\nsql.Scanner interface so it can be used as a scan destination, similar to\nsql.NullString.",
+      "type": "object",
+      "properties": {
+        "Time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Valid": {
+          "type": "boolean"
+        }
+      },
+      "x-go-package": "github.com/lib/pq"
+    },
+    "Password": {
+      "type": "object",
+      "required": [
+        "userid",
+        "oldpassword",
+        "newpassword"
+      ],
+      "properties": {
+        "newpassword": {
+          "type": "string",
+          "minLength": 6,
+          "x-go-name": "NewPassword"
+        },
+        "oldpassword": {
+          "type": "string",
+          "minLength": 6,
+          "x-go-name": "OldPassword"
+        },
+        "userid": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1,
+          "x-go-name": "UserID"
+        }
+      },
+      "x-go-package": "gitlab.com/rockship/payment-gateway/models"
+    },
+    "PaymentSource": {
+      "description": "The Type should indicate which object is fleshed out (eg. BitcoinReceiver or Card)\nFor more details see https://stripe.com/docs/api#retrieve_charge",
+      "type": "object",
+      "title": "PaymentSource describes the payment source used to make a Charge.",
+      "properties": {
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "object": {
+          "$ref": "#/definitions/PaymentSourceType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PaymentSourceType": {
+      "type": "string",
+      "title": "PaymentSourceType consts represent valid payment sources.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PayoutInterval": {
+      "type": "string",
+      "title": "Interval describes the payout interval.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PayoutSchedule": {
+      "type": "object",
+      "title": "PayoutSchedule is the structure for an account's payout schedule.",
+      "properties": {
+        "delay_days": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "DelayDays"
+        },
+        "interval": {
+          "$ref": "#/definitions/PayoutInterval"
+        },
+        "monthly_anchor": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "MonthlyAnchor"
+        },
+        "weekly_anchor": {
+          "type": "string",
+          "x-go-name": "WeeklyAnchor"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Period": {
+      "type": "object",
+      "title": "Period is a structure representing a start and end dates.",
+      "properties": {
+        "end": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "End"
+        },
+        "start": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Start"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Plan": {
+      "description": "For more details see https://stripe.com/docs/api#plans.",
+      "type": "object",
+      "title": "Plan is the resource representing a Stripe plan.",
+      "properties": {
+        "active": {
+          "type": "boolean",
+          "x-go-name": "Active"
+        },
+        "aggregate_usage": {
+          "type": "string",
+          "x-go-name": "AggregateUsage"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "billing_scheme": {
+          "$ref": "#/definitions/PlanBillingScheme"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "interval": {
+          "$ref": "#/definitions/PlanInterval"
+        },
+        "interval_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "IntervalCount"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "nickname": {
+          "type": "string",
+          "x-go-name": "Nickname"
+        },
+        "product": {
+          "type": "string",
+          "x-go-name": "Product"
+        },
+        "tiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlanTier"
+          },
+          "x-go-name": "Tiers"
+        },
+        "tiers_mode": {
+          "type": "string",
+          "x-go-name": "TiersMode"
+        },
+        "transform_usage": {
+          "$ref": "#/definitions/PlanTransformUsage"
+        },
+        "trial_period_days": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TrialPeriodDays"
+        },
+        "usage_type": {
+          "$ref": "#/definitions/PlanUsageType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PlanBillingScheme": {
+      "type": "string",
+      "title": "PlanBillingScheme is the list of allowed values for a plan's billing scheme.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PlanInterval": {
+      "type": "string",
+      "title": "PlanInterval is the list of allowed values for a plan's interval.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PlanTier": {
+      "description": "PlanTier configures tiered pricing",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "up_to": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "UpTo"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PlanTransformUsage": {
+      "type": "object",
+      "title": "PlanTransformUsage represents the bucket billing configuration.",
+      "properties": {
+        "divide_by": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "DivideBy"
+        },
+        "round": {
+          "$ref": "#/definitions/PlanTransformUsageRound"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PlanTransformUsageRound": {
+      "type": "string",
+      "title": "PlanTransformUsageRound is the list of allowed values for a plan's transform usage round logic.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "PlanUsageType": {
+      "type": "string",
+      "title": "PlanUsageType is the list of allowed values for a plan's usage type.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Recipient": {
+      "description": "For more details see https://stripe.com/docs/api#recipients.",
+      "type": "object",
+      "title": "Recipient is the resource representing a Stripe recipient.",
+      "properties": {
+        "active_account": {
+          "$ref": "#/definitions/BankAccount"
+        },
+        "cards": {
+          "$ref": "#/definitions/CardList"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "default_card": {
+          "$ref": "#/definitions/Card"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "migrated_to": {
+          "$ref": "#/definitions/Account"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "type": {
+          "$ref": "#/definitions/RecipientType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "RecipientType": {
+      "type": "string",
+      "title": "RecipientType is the list of allowed values for the recipient's type.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Refund": {
+      "description": "For more details see https://stripe.com/docs/api#refunds.",
+      "type": "object",
+      "title": "Refund is the resource representing a Stripe refund.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "balance_transaction": {
+          "$ref": "#/definitions/BalanceTransaction"
+        },
+        "charge": {
+          "$ref": "#/definitions/Charge"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "reason": {
+          "$ref": "#/definitions/RefundReason"
+        },
+        "receipt_number": {
+          "type": "string",
+          "x-go-name": "ReceiptNumber"
+        },
+        "status": {
+          "$ref": "#/definitions/RefundStatus"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "RefundList": {
+      "type": "object",
+      "title": "RefundList is a list object for refunds.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Refund"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "RefundReason": {
+      "description": "RefundReason is, if set, the reason the refund is being made",
+      "type": "string",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "RefundStatus": {
+      "type": "string",
+      "title": "RefundStatus is the status of the refund.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Reversal": {
+      "type": "object",
+      "title": "Reversal represents a transfer reversal.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "balance_transaction": {
+          "$ref": "#/definitions/BalanceTransaction"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "transfer": {
+          "type": "string",
+          "x-go-name": "Transfer"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ReversalList": {
+      "type": "object",
+      "title": "ReversalList is a list of object for reversals.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Reversal"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Review": {
+      "type": "object",
+      "properties": {
+        "charge": {
+          "$ref": "#/definitions/Charge"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "open": {
+          "type": "boolean",
+          "x-go-name": "Open"
+        },
+        "reason": {
+          "$ref": "#/definitions/ReviewReasonType"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ReviewReasonType": {
+      "type": "string",
+      "title": "ReviewReasonType describes the reason why the review is open or closed.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ShippingDetails": {
+      "type": "object",
+      "title": "ShippingDetails is the structure containing shipping information.",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "carrier": {
+          "type": "string",
+          "x-go-name": "Carrier"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "phone": {
+          "type": "string",
+          "x-go-name": "Phone"
+        },
+        "tracking_number": {
+          "type": "string",
+          "x-go-name": "TrackingNumber"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "SourceList": {
+      "type": "object",
+      "title": "SourceList is a list object for cards.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PaymentSource"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "Subscription": {
+      "description": "For more details see https://stripe.com/docs/api#subscriptions.",
+      "type": "object",
+      "title": "Subscription is the resource representing a Stripe subscription.",
+      "properties": {
+        "application_fee_percent": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "ApplicationFeePercent"
+        },
+        "billing": {
+          "$ref": "#/definitions/SubscriptionBilling"
+        },
+        "billing_cycle_anchor": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "BillingCycleAnchor"
+        },
+        "cancel_at_period_end": {
+          "type": "boolean",
+          "x-go-name": "CancelAtPeriodEnd"
+        },
+        "canceled_at": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CanceledAt"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "current_period_end": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CurrentPeriodEnd"
+        },
+        "current_period_start": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CurrentPeriodStart"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "days_until_due": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "DaysUntilDue"
+        },
+        "discount": {
+          "$ref": "#/definitions/Discount"
+        },
+        "ended_at": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "EndedAt"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "items": {
+          "$ref": "#/definitions/SubscriptionItemList"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "plan": {
+          "$ref": "#/definitions/Plan"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Quantity"
+        },
+        "start": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Start"
+        },
+        "status": {
+          "$ref": "#/definitions/SubscriptionStatus"
+        },
+        "tax_percent": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "TaxPercent"
+        },
+        "trial_end": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TrialEnd"
+        },
+        "trial_start": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TrialStart"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "SubscriptionBilling": {
+      "type": "string",
+      "title": "SubscriptionBilling is the type of billing method for this subscription's invoices.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "SubscriptionItem": {
+      "description": "For more details see https://stripe.com/docs/api#subscription_items.",
+      "type": "object",
+      "title": "SubscriptionItem is the resource representing a Stripe subscription item.",
+      "properties": {
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "deleted": {
+          "type": "boolean",
+          "x-go-name": "Deleted"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "plan": {
+          "$ref": "#/definitions/Plan"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Quantity"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "SubscriptionItemList": {
+      "type": "object",
+      "title": "SubscriptionItemList is a list of invoice items as retrieved from a list endpoint.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SubscriptionItem"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "SubscriptionList": {
+      "type": "object",
+      "title": "SubscriptionList is a list object for subscriptions.",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Subscription"
+          },
+          "x-go-name": "Data"
+        },
+        "has_more": {
+          "type": "boolean",
+          "x-go-name": "HasMore"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "TotalCount"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "SubscriptionStatus": {
+      "type": "string",
+      "title": "SubscriptionStatus is the list of allowed values for the subscription's status.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ThreeDSecure": {
+      "description": "ThreeDSecure is the resource representing a Stripe 3DS object\nFor more details see https://stripe.com/docs/api#three_d_secure.",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "authenticated": {
+          "type": "boolean",
+          "x-go-name": "Authenticated"
+        },
+        "card": {
+          "$ref": "#/definitions/Card"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "redirect_url": {
+          "type": "string",
+          "x-go-name": "RedirectURL"
+        },
+        "status": {
+          "$ref": "#/definitions/ThreeDSecureStatus"
+        },
+        "supported": {
+          "type": "string",
+          "x-go-name": "Supported"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "ThreeDSecureStatus": {
+      "type": "string",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "TransactionUser": {
+      "type": "object",
+      "properties": {
+        "charge_id": {
+          "$ref": "#/definitions/NullString"
+        },
+        "code": {
+          "$ref": "#/definitions/NullString"
+        },
+        "coupon_code": {
+          "$ref": "#/definitions/NullString"
+        },
+        "coupon_create_at": {
+          "$ref": "#/definitions/NullTime"
+        },
+        "coupon_currency": {
+          "$ref": "#/definitions/NullString"
+        },
+        "coupon_status": {
+          "$ref": "#/definitions/NullString"
+        },
+        "coupon_value": {
+          "$ref": "#/definitions/NullFloat64"
+        },
+        "create_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "CreateAt"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "method_name": {
+          "$ref": "#/definitions/NullString"
+        },
+        "parsed_account": {
+          "$ref": "#/definitions/NullString"
+        },
+        "parsed_amount": {
+          "$ref": "#/definitions/NullFloat64"
+        },
+        "phonenumber": {
+          "$ref": "#/definitions/NullString"
+        },
+        "raw_receipt": {
+          "$ref": "#/definitions/NullString"
+        },
+        "status": {
+          "type": "string",
+          "x-go-name": "Status"
+        },
+        "sys_create_at": {
+          "$ref": "#/definitions/NullTime"
+        }
+      },
+      "x-go-package": "gitlab.com/rockship/payment-gateway/models"
+    },
+    "Transfer": {
+      "description": "For more details see https://stripe.com/docs/api#transfers.",
+      "type": "object",
+      "title": "Transfer is the resource representing a Stripe transfer.",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Amount"
+        },
+        "amount_reversed": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AmountReversed"
+        },
+        "balance_transaction": {
+          "$ref": "#/definitions/BalanceTransaction"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Created"
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        },
+        "destination": {
+          "$ref": "#/definitions/TransferDestination"
+        },
+        "destination_payment": {
+          "$ref": "#/definitions/Charge"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "livemode": {
+          "type": "boolean",
+          "x-go-name": "Livemode"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Metadata"
+        },
+        "reversals": {
+          "$ref": "#/definitions/ReversalList"
+        },
+        "reversed": {
+          "type": "boolean",
+          "x-go-name": "Reversed"
+        },
+        "source_transaction": {
+          "$ref": "#/definitions/BalanceTransactionSource"
+        },
+        "source_type": {
+          "$ref": "#/definitions/TransferSourceType"
+        },
+        "transfer_group": {
+          "type": "string",
+          "x-go-name": "TransferGroup"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "TransferDestination": {
+      "description": "The Type should indicate which object is fleshed out\nFor more details see https://stripe.com/docs/api/go#transfer_object",
+      "type": "object",
+      "title": "TransferDestination describes the destination of a Transfer.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        }
+      },
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "TransferSourceType": {
+      "type": "string",
+      "title": "TransferSourceType is the list of allowed values for the transfer's source_type field.",
+      "x-go-package": "github.com/stripe/stripe-go"
+    },
+    "UserInfo": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "description": "Số dư",
+          "type": "number",
+          "format": "double",
+          "x-go-name": "Balance"
+        },
+        "email": {
+          "description": "Địa chỉ Email của user có định danh id",
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "fullname": {
+          "description": "Họ và tên do user cung cấp",
+          "type": "string",
+          "x-go-name": "Fullname"
+        },
+        "phone": {
+          "description": "Số điện thoại của user tương ứng",
+          "type": "string",
+          "x-go-name": "Phone"
+        },
+        "userid": {
+          "description": "ID định danh cho user",
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1,
+          "x-go-name": "UserID"
+        }
+      },
+      "x-go-package": "gitlab.com/rockship/payment-gateway/models"
+    }
+  },
+  "responses": {
+    "DecResCustomer": {
+      "description": "Server xử lí thành công",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "address_zip": {
+                  "description": "Mã bưu điện",
+                  "type": "string",
+                  "x-go-name": "AddressZip"
+                },
+                "brand": {
+                  "description": "Loại thẻ (Visa, MasterCard, ...)",
+                  "type": "string",
+                  "x-go-name": "Brand"
+                },
+                "exp_month": {
+                  "description": "Tháng hết hạn",
+                  "type": "integer",
+                  "format": "uint8",
+                  "x-go-name": "ExpMonth"
+                },
+                "exp_year": {
+                  "description": "Năm hết hạn",
+                  "type": "integer",
+                  "format": "uint16",
+                  "x-go-name": "ExpYear"
+                },
+                "fingerprint": {
+                  "description": "Chữ ký trên thẻ",
+                  "type": "string",
+                  "uniqueItems": true,
+                  "x-go-name": "Fingerprint"
+                },
+                "funding": {
+                  "description": "Hình thức (Credit, Debit, ...)",
+                  "type": "string",
+                  "x-go-name": "Funding"
+                },
+                "id": {
+                  "description": "ID định danh cho customer",
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "x-go-name": "ID"
+                },
+                "last4": {
+                  "description": "Bốn số cuối thẻ",
+                  "type": "string",
+                  "x-go-name": "Last4"
+                },
+                "user_id": {
+                  "description": "UserID khóa ngoại đến model user",
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "x-go-name": "UserID"
+                }
+              }
+            },
+            "x-go-name": "CusUsers"
+          }
+        }
+      }
+    },
+    "DocReceiveReceiptSuccess": {
+      "description": "Server xử lí yêu cầu thành công",
+      "schema": {
+        "type": "object",
+        "required": [
+          "coupon"
+        ],
+        "properties": {
+          "coupon": {
+            "$ref": "#/definitions/Coupon"
+          },
+          "error": {
+            "type": "string",
+            "x-go-name": "Error"
+          }
+        }
+      }
+    },
+    "DocResCouponInfo": {
+      "description": "Server xử lí thành công",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "coupons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Coupon"
+            },
+            "x-go-name": "Coupons"
+          },
+          "error": {
+            "type": "string",
+            "x-go-name": "Error"
+          }
+        }
+      }
+    },
+    "DocResDefault": {
+      "description": "Lỗi phía Server",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Something went wrong. please try again",
+            "type": "string",
+            "x-go-name": "Error"
+          }
+        }
+      }
+    },
+    "DocResLogin": {
+      "description": "Server xử lí thành công",
+      "schema": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "error": {
+            "description": "'' | Email or Password wrong!",
+            "type": "string",
+            "x-go-name": "Error"
+          },
+          "status": {
+            "description": "OK | ERROR",
+            "type": "string",
+            "x-go-name": "Status"
+          },
+          "token": {
+            "type": "string",
+            "x-go-name": "Token"
+          }
+        }
+      }
+    },
+    "DocResRegister": {
+      "description": "Server xử lí thành công. Lỗi phía người dùng",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Password Not Match | Existing Account | Error establishing a database connection",
+            "type": "string",
+            "x-go-name": "Error"
+          }
+        }
+      }
+    },
+    "DocResRegisterSuccess": {
+      "description": "Server xử lí yêu cầu thành công",
+      "schema": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "x-go-name": "Error"
+          },
+          "token": {
+            "type": "string",
+            "x-go-name": "Token"
+          }
+        }
+      }
+    },
+    "DocResTxMsg": {
+      "description": "Server xử lí thành công. Lỗi phía người dùng",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Password Not Match | Existing Account | Error establishing a database connection",
+            "type": "string",
+            "x-go-name": "Error"
+          }
+        }
+      }
+    },
+    "DocResTxSuccess": {
+      "description": "Server xử lí thành công",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "charge": {
+            "$ref": "#/definitions/Charge"
+          },
+          "transaction": {
+            "$ref": "#/definitions/TransactionUser"
+          }
+        }
+      }
+    },
+    "DocResUpdateTxTimeOut": {
+      "description": "Update thành công"
+    },
+    "DocResUpdateUserInfo": {
+      "description": "Update thành công",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "x-go-name": "Message"
+          }
+        }
+      }
+    },
+    "DocResUserInfo": {
+      "description": "Server xử lí yêu cầu thành công",
+      "schema": {
+        "$ref": "#/definitions/UserInfo"
+      }
+    },
+    "DocResUserMsg": {
+      "description": "Server xử lí thành công. Lỗi phía người dùng",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "UserID Invalid | User not exist",
+            "type": "string",
+            "x-go-name": "Error"
+          }
+        }
+      }
+    }
+  }
+}

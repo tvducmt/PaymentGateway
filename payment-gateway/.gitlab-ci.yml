@@ -1,0 +1,68 @@
+image: golang:1.10
+
+variables:
+  REPO_NAME: gitlab.com/rockship/payment-gateway
+  # Gitlab CI Variables
+  # STAGING_SERVER: 
+  # SERVER_PASSWORD: 
+  # REPO_SLACK_WEBHOOK: 
+
+before_script:
+  - go version
+  - echo $CI_BUILD_REF
+  - echo $CI_COMMIT_TITLE
+  - echo $CI_PROJECT_DIR
+  - mkdir -p $GOPATH/src/$REPO_NAME
+  - mv $CI_PROJECT_DIR/* $GOPATH/src/$REPO_NAME
+  - cd $GOPATH/src/$REPO_NAME
+
+stages:
+  - test
+  - deploy
+
+test-job:
+  stage: test
+  script:
+    - go get -u github.com/golang/dep/cmd/dep
+    - dep ensure -v
+    - echo
+    - make test
+    - make build
+  after_script:
+    - echo Done test
+
+deploy-dev-job:
+  stage: deploy
+  only:
+    - dev
+  environment:
+    name: development
+    url: https://dev-api-heimdall.rockship.co
+  script:
+    - apt-get update -qq && apt-get install -y -qq sshpass rsync
+    - curl https://gitlab.com/snippets/1731536/raw -o /usr/bin/slack-push && chmod +x /usr/bin/slack-push
+    - echo
+    - export SSHPASS=$SERVER_PASSWORD
+    - sshpass -e rsync -avzP -e "ssh -o StrictHostKeyChecking=no" $GOPATH/src/$REPO_NAME $STAGING_SERVER:/home/heimdall/dev
+    - sshpass -e ssh -o stricthostkeychecking=no $STAGING_SERVER "export EXPOSE_PORT=3001 && cd /home/heimdall/dev/payment-gateway && sh deploy.sh"
+  after_script:
+    - echo Done
+    - slack-push $REPO_SLACK_WEBHOOK "Your code on [dev] branch has been deploy to dev server."
+
+deploy-stg-job:
+  stage: deploy
+  only:
+    - staging
+  environment:
+    name: staging
+    url: https://stg-api-heimdall.rockship.co
+  script:
+    - apt-get update -qq && apt-get install -y -qq sshpass rsync
+    - curl https://gitlab.com/snippets/1731536/raw -o /usr/bin/slack-push && chmod +x /usr/bin/slack-push
+    - echo
+    - export SSHPASS=$SERVER_PASSWORD    
+    - sshpass -e rsync -avzP -e "ssh -o StrictHostKeyChecking=no" $GOPATH/src/$REPO_NAME $STAGING_SERVER:/home/heimdall/staging
+    - sshpass -e ssh -o stricthostkeychecking=no $STAGING_SERVER "export EXPOSE_PORT=3002 && cd /home/heimdall/staging/payment-gateway && sh deploy.sh"
+  after_script:
+    - echo Done
+    - slack-push $REPO_SLACK_WEBHOOK "Your code on [staging] branch has been deploy to staging server."

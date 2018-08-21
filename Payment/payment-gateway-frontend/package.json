@@ -1,0 +1,23 @@
+{
+  "name": "04.payment-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "react": "^16.4.1",
+    "react-copy-to-clipboard": "^5.0.1",
+    "react-dom": "^16.4.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.4",
+    "react-slick": "^0.23.1",
+    "react-stripe-elements": "^2.0.0",
+    "react-transition-group": "^2.4.0",
+    "sweetalert2": "^7.24.4"
+  },
+  "scripts": {
+    "start": "PORT=8080 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

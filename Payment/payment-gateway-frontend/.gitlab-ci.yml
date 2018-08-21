@@ -1,0 +1,39 @@
+image: kriasoft/node-ci
+
+before_script:
+  - apt-get update
+
+stages:
+  - deploy
+variables:
+  STG_BUCKET: stg-heimdall.rockship.co
+  PROD_BUCKET: prod-heimdall.rockship.co
+
+staging:
+  stage: deploy
+  before_script:
+    - export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
+    - export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
+    - aws --version
+  script:
+    - npm install
+    - npm run build
+    - aws cloudfront create-invalidation --distribution-id $STG_CDN_DISTRIBUTION_ID --paths "/*"
+    - aws s3 sync build/ s3://$STG_BUCKET/ --acl public-read --expires 2592000
+  only:
+    - dev
+
+production:
+  stage: deploy
+  before_script:
+    - export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+    - export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+    - aws --version
+  script:
+    - npm install
+    - npm run build
+    - aws cloudfront create-invalidation --distribution-id $PROD_CDN_DISTRIBUTION_ID --paths "/*"
+    - aws s3 sync build/ s3://$PROD_BUCKET/ --acl public-read --expires 2592000
+  only:
+    - master
+

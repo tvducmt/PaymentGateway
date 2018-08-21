@@ -1,0 +1,12 @@
+{
+    "clientname": "",
+    "client_uri": "",
+    "scope": "",
+    "redirect_uri": "",
+    "grant_type": "",
+    "response_type": "",
+    "token_endpoint_auth_method": "",
+
+    "client_id": "",
+    "client_secret": ""
+}

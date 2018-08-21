@@ -1,0 +1,19 @@
+version: "2"
+
+services:  
+  api_payment:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - ${EXPOSE_PORT}:3000
+    depends_on:
+      - db_payment
+
+  db_payment:
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
+    environment:
+      - POSTGRES_USER=rockship
+      - POSTGRES_DB=payment_gateway
